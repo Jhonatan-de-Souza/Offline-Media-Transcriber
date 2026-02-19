@@ -37,7 +37,7 @@ class TranscriberApp(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Beautiful Audio Transcriber")
-        self.setWindowIcon(QIcon("audio-to-text.ico"))
+        self.setWindowIcon(QIcon("modules/assets/audio-to-text.ico"))
         self.setGeometry(100, 100, 700, 550)
         self.setStyleSheet("background-color: #1e1e1e; color: #ffffff;")  # Dark theme
         self.center_on_screen()

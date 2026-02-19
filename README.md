@@ -1,4 +1,4 @@
-# Free local **Audio/Video-to-Text Transcriber**
+# Offline Media Transcriber
 
 Convert any audio or video file to text with ease. This desktop application uses **Whisper AI** for fast, accurate transcription—completely local and private.
 

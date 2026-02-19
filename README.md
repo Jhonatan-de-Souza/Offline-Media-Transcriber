@@ -1,5 +1,13 @@
 # Offline Media Transcriber
 
+## 📸 Preview
+
+### GUI Interface
+![Selecting files to compress](modules/assets/before1.jpeg)
+
+### After transcription
+![After transcription](modules/assets/after2.jpeg)
+
 Convert any audio or video file to text with ease. This desktop application uses **Whisper AI** for fast, accurate transcription—completely local and private.
 
 ## Features

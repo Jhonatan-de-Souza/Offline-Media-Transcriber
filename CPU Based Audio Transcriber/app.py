@@ -4,7 +4,8 @@ from pathlib import Path
 from model_manager import ModelManager
 from transcription_service import TranscriptionService
 from video_converter import VideoConverter
-from config import MODEL_CONFIG
+from download_splash import DownloadSplash
+from config import MODEL_CONFIG, download_models_if_needed
 
 # Light Reddit-style theme
 COLOR_BG = "#f6f7f8"           # Light background
@@ -32,6 +33,34 @@ class AudioTranscriberApp(ctk.CTk):
         self.geometry("900x750")
         self.configure(fg_color=COLOR_BG)
         self._center_window()
+        
+        # Hide main window during model download
+        self.withdraw()
+        
+        # Create and show splash screen for model download
+        splash = DownloadSplash(self)
+        
+        # Download models if needed (must happen before ModelManager)
+        success = download_models_if_needed(
+            on_file_start=splash.update_file,
+            on_progress=splash.set_progress,
+            on_status=splash.update_status,
+        )
+        
+        splash.close()
+        
+        if not success:
+            messagebox.showerror(
+                "Error", 
+                "Could not download model files. Please check your internet connection.\n"
+                "You can download them manually from:\n"
+                "https://huggingface.co/csukuangfj/sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8"
+            )
+            self.destroy()
+            return
+        
+        # Show main window
+        self.deiconify()
         
         # State
         self.audio_file: str | None = None

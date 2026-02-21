@@ -98,14 +98,20 @@ Launch the app:
 python app.py
 ```
 
-You'll see:
-1. **Loading screen** — App initializes and loads the model
-2. **Main window** — Ready to transcribe
+**On first run:**
+1. **Download splash screen** — App automatically downloads AI models from Hugging Face (~671MB)
+2. **Progress indicator** — Shows download status
+3. **Main window** — Ready to transcribe
+
+**Subsequent runs:**
+1. **No splash screen** — Models are cached locally, app starts instantly
+2. **Loading screen** — App loads the model into memory
+3. **Main window** — Ready to transcribe
 
 Then:
 1. Click **Browse** and select an audio or video file
 2. Click **Transcribe**
-3. Watch the countdown timer (not a frozen progress bar!)
+3. Watch the countdown timer
 4. Results appear automatically
 
 ### Supported File Types
@@ -139,7 +145,8 @@ Then:
 ```
 CPU Based Audio Transcriber/
 ├── app.py                      # Main interface (start here)
-├── config.py                   # Model paths configuration
+├── config.py                   # Model auto-download configuration
+├── download_splash.py          # Download progress splash screen
 ├── model_manager.py            # Parakeet V3 model loader
 ├── transcription_service.py    # Transcription engine
 ├── performance_profiler.py     # CPU benchmarking
@@ -147,11 +154,14 @@ CPU Based Audio Transcriber/
 ├── audio_handler.py            # Audio file loading
 ├── requirements.txt            # Dependencies list
 │
-├── models/                     # ONNX model files (included)
+├── models/                     # ONNX model files (auto-downloaded on first run)
 │   ├── encoder.int8.onnx
 │   ├── decoder.int8.onnx
 │   ├── joiner.int8.onnx
 │   └── tokens.txt
+```
+
+**Note:** Model files are automatically downloaded from Hugging Face on first run (~671MB). Subsequent runs use the cached models.
 │
 └── assets/                     # UI resources
 ```
@@ -229,9 +239,16 @@ If `True` appears, your GPU is ready. If `False`, see [GPU troubleshooting](#gpu
 python main.py
 ```
 
-You'll see:
-1. **Splash screen** — Whisper model loads
-2. **Main window** — Two columns for single/batch transcription
+**On first run:**
+1. **Download splash screen** — App automatically downloads Whisper AI model from Hugging Face (~1GB)
+2. **Progress indicator** — Shows download status
+3. **Splash screen** — Model loads into memory
+4. **Main window** — Two columns for single/batch transcription
+
+**Subsequent runs:**
+1. **No download** — Models are cached, app loads model directly
+2. **Splash screen** — Model loads into memory
+3. **Main window** — Ready to transcribe
 
 Choose **Single File Transcription** or **Batch Processing**:
 
@@ -258,6 +275,8 @@ Choose **Single File Transcription** or **Batch Processing**:
 - `openai-whisper>=20230314` — Whisper speech recognition
 - `pydub>=0.25.0` — Audio handling
 - `PyQt5>=5.0.0` — Professional interface
+
+**Note:** AI models are automatically downloaded from Hugging Face on first run (~1GB). Subsequent runs use the cached models.
 
 ---
 

@@ -83,19 +83,19 @@ class DownloadSplash(ctk.CTkToplevel):
         self.transient(parent)
     
     def update_file(self, filename: str) -> None:
-        """Update the current file being downloaded."""
+        """Update the current file being downloaded (thread-safe)."""
         self.file_label.configure(text=f"📥 {filename}")
-        self.update()
+        self.update_idletasks()
     
     def update_status(self, status: str) -> None:
-        """Update the status message."""
+        """Update the status message (thread-safe)."""
         self.status_label.configure(text=status)
-        self.update()
+        self.update_idletasks()
     
     def set_progress(self, value: float) -> None:
-        """Set progress bar value (0.0 to 1.0)."""
+        """Set progress bar value (0.0 to 1.0) (thread-safe)."""
         self.progress.set(value)
-        self.update()
+        self.update_idletasks()
     
     def close(self) -> None:
         """Close the splash screen."""

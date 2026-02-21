@@ -6,6 +6,7 @@ from transcription_service import TranscriptionService
 from video_converter import VideoConverter
 from download_splash import DownloadSplash
 from config import MODEL_CONFIG, download_models_if_needed
+import threading
 
 # Light Reddit-style theme
 COLOR_BG = "#f6f7f8"           # Light background
@@ -31,25 +32,43 @@ class AudioTranscriberApp(ctk.CTk):
         # Window setup
         self.title("Fast Audio Transcriber")
         self.geometry("900x750")
+        self.minsize(900, 750)
+        self.resizable(False, False)
         self.configure(fg_color=COLOR_BG)
         self._center_window()
+        
+        # Initialize download state
+        self.download_success = False
+        self.download_complete = False
         
         # Hide main window during model download
         self.withdraw()
         
         # Create and show splash screen for model download
-        splash = DownloadSplash(self)
+        self.splash = DownloadSplash(self)
+        self.splash.focus()
         
-        # Download models if needed (must happen before ModelManager)
-        success = download_models_if_needed(
-            on_file_start=splash.update_file,
-            on_progress=splash.set_progress,
-            on_status=splash.update_status,
+        # Start download in a separate thread
+        self.download_thread = threading.Thread(
+            target=self._download_models_threaded,
+            daemon=True
         )
+        self.download_thread.start()
         
-        splash.close()
+        # Check download status periodically
+        self.after(100, self._check_download_status)
+    
+    def _check_download_status(self) -> None:
+        """Periodically check if download is complete."""
+        if not self.download_complete:
+            # Keep checking
+            self.after(100, self._check_download_status)
+            return
         
-        if not success:
+        # Download is complete
+        self.splash.close()
+        
+        if not self.download_success:
             messagebox.showerror(
                 "Error", 
                 "Could not download model files. Please check your internet connection.\n"
@@ -59,7 +78,7 @@ class AudioTranscriberApp(ctk.CTk):
             self.destroy()
             return
         
-        # Show main window
+        # Show main window and continue initialization
         self.deiconify()
         
         # State
@@ -73,6 +92,36 @@ class AudioTranscriberApp(ctk.CTk):
         # UI Setup
         self._setup_ui()
         self._load_model_async()
+    
+    def _download_models_threaded(self) -> None:
+        """Run model download in a separate thread with thread-safe GUI updates."""
+        def update_file_safe(filename: str) -> None:
+            """Schedule file label update on main thread."""
+            if not self.download_complete:
+                self.after(0, lambda: self.splash.update_file(filename))
+        
+        def update_progress_safe(value: float) -> None:
+            """Schedule progress update on main thread."""
+            if not self.download_complete:
+                self.after(0, lambda: self.splash.set_progress(value))
+        
+        def update_status_safe(status: str) -> None:
+            """Schedule status update on main thread."""
+            if not self.download_complete:
+                self.after(0, lambda: self.splash.update_status(status))
+        
+        # Download models if needed
+        try:
+            self.download_success = download_models_if_needed(
+                on_file_start=update_file_safe,
+                on_progress=update_progress_safe,
+                on_status=update_status_safe,
+            )
+        except Exception as e:
+            print(f"Download error: {e}")
+            self.download_success = False
+        finally:
+            self.download_complete = True
     
     def _center_window(self) -> None:
         """Center window on screen."""

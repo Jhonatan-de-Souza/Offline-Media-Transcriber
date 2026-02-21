@@ -43,26 +43,26 @@ cd "CPU Based Audio Transcriber"
 
 **Step 2: Create a virtual environment**
 
-=== "macOS / Linux"
+macOS / Linux:
 
-    ```bash
-    python3 -m venv venv
-    source venv/bin/activate
-    ```
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
 
-=== "Windows (PowerShell)"
+Windows (PowerShell):
 
-    ```powershell
-    python -m venv venv
-    venv\Scripts\Activate.ps1
-    ```
+```powershell
+python -m venv venv
+venv\Scripts\Activate.ps1
+```
 
-=== "Windows (Command Prompt)"
+Windows (Command Prompt):
 
-    ```cmd
-    python -m venv venv
-    venv\Scripts\activate.bat
-    ```
+```cmd
+python -m venv venv
+venv\Scripts\activate.bat
+```
 
 **Step 3: Install dependencies**
 
@@ -72,23 +72,23 @@ pip install -r requirements.txt
 
 **Step 4 (Optional): Install FFmpeg for video support**
 
-=== "macOS"
+macOS:
 
-    ```bash
-    brew install ffmpeg
-    ```
+```bash
+brew install ffmpeg
+```
 
-=== "Ubuntu / Debian"
+Ubuntu / Debian:
 
-    ```bash
-    sudo apt-get install ffmpeg
-    ```
+```bash
+sudo apt-get install ffmpeg
+```
 
-=== "Windows"
+Windows:
 
-    ```bash
-    choco install ffmpeg
-    ```
+```bash
+choco install ffmpeg
+```
 
 ### Quick Start
 
@@ -124,13 +124,13 @@ Then:
 
 ```
 1. Select file
-   ↓
+  ↓
 2. App measures CPU speed (5-second benchmark)
-   ↓
+  ↓
 3. Calculate: estimated_time = file_duration × your_cpu_speed
-   ↓
+  ↓
 4. Transcribe with accurate countdown
-   ↓
+  ↓
 5. Show results
 ```
 
@@ -189,19 +189,19 @@ cd "GPU Based Audio Transcriber"
 
 **Step 2: Create a virtual environment**
 
-=== "macOS / Linux"
+macOS / Linux:
 
-    ```bash
-    python3 -m venv venv
-    source venv/bin/activate
-    ```
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
 
-=== "Windows (PowerShell)"
+Windows (PowerShell):
 
-    ```powershell
-    python -m venv venv
-    venv\Scripts\Activate.ps1
-    ```
+```powershell
+python -m venv venv
+venv\Scripts\Activate.ps1
+```
 
 **Step 3: Install dependencies**
 
@@ -271,20 +271,20 @@ Choose **Single File Transcription** or **Batch Processing**:
 1. Start app: python app.py
 
 2. App benchmarks your CPU (watch progress):
-   "⏳ Starting CPU benchmark..."
-   "✓ CPU benchmark complete (RTF: 1.2x)"
+  "⏳ Starting CPU benchmark..."
+  "✓ CPU benchmark complete (RTF: 1.2x)"
 
 3. Click "Browse" → Select "podcast.mp4"
 
 4. Click "Transcribe"
-   Status: "⏱️ 15.2s remaining"
-   (countdown updates every 0.5 seconds)
+  Status: "⏱️ 15.2s remaining"
+  (countdown updates every 0.5 seconds)
 
 5. Wait for transcription
-   Status: "✓ Ready"
+  Status: "✓ Ready"
 
 6. Results appear in text box
-   (Select all + copy, or save to file)
+  (Select all + copy, or save to file)
 ```
 
 ### GPU Version: Batch Processing
@@ -293,24 +293,24 @@ Choose **Single File Transcription** or **Batch Processing**:
 
 ```
 1. Start app: python main.py
-   (Splash screen shows model loading progress)
+  (Splash screen shows model loading progress)
 
 2. Click "Select Folder with Files"
-   → Choose folder with 10 MP4s
+  → Choose folder with 10 MP4s
 
 3. Shows "✓ 10 file(s) found"
 
 4. Click "Start Batch"
-   → Choose output folder
+  → Choose output folder
 
 5. Watch real-time progress:
-   "Processing 3/10: meeting-notes.mp4"
-   "⏱️ Est. Time: 2:45"
+  "Processing 3/10: meeting-notes.mp4"
+  "⏱️ Est. Time: 2:45"
 
 6. Results saved:
-   ✓ meeting-notes.txt
-   ✓ Q1-summary.txt
-   ...
+  ✓ meeting-notes.txt
+  ✓ Q1-summary.txt
+  ...
 ```
 
 ---
@@ -339,32 +339,32 @@ pip install -r requirements.txt
 **Cause:** FFmpeg not installed on your system  
 **Solution:**
 
-=== "macOS"
+macOS:
 
-    ```bash
-    # Install Homebrew first if needed: https://brew.sh
-    brew install ffmpeg
-    ```
+```bash
+# Install Homebrew first if needed: https://brew.sh
+brew install ffmpeg
+```
 
-=== "Ubuntu / Debian"
+Ubuntu / Debian:
 
-    ```bash
-    sudo apt-get update
-    sudo apt-get install ffmpeg
-    ```
+```bash
+sudo apt-get update
+sudo apt-get install ffmpeg
+```
 
-=== "Windows"
+Windows:
 
-    ```bash
-    # Option 1: Using Chocolatey (requires admin)
-    choco install ffmpeg
+```bash
+# Option 1: Using Chocolatey (requires admin)
+choco install ffmpeg
 
-    # Option 2: Manual download
-    # 1. Visit https://ffmpeg.org/download.html
-    # 2. Download Windows build
-    # 3. Extract to C:\ffmpeg
-    # 4. Add C:\ffmpeg\bin to PATH
-    ```
+# Option 2: Manual download
+# 1. Visit https://ffmpeg.org/download.html
+# 2. Download Windows build
+# 3. Extract to C:\ffmpeg
+# 4. Add C:\ffmpeg\bin to PATH
+```
 
 #### "Model files not found"
 
@@ -440,10 +440,10 @@ Edit `config.py`:
 
 ```python
 MODEL_CONFIG = {
-    "encoder_path": "./models/encoder.int8.onnx",  # ← Path to encoder
-    "decoder_path": "./models/decoder.int8.onnx",
-    "joiner_path": "./models/joiner.int8.onnx",
-    "tokens_path": "./models/tokens.txt",
+   "encoder_path": "./models/encoder.int8.onnx",  # ← Path to encoder
+   "decoder_path": "./models/decoder.int8.onnx",
+   "joiner_path": "./models/joiner.int8.onnx",
+   "tokens_path": "./models/tokens.txt",
 }
 ```
 
@@ -474,7 +474,7 @@ MODEL_CONFIG = {
 
 ---
 
-##  Privacy & Security
+## Privacy & Security
 
 ✅ **100% Offline** — All processing happens on your computer  
 ✅ **No Cloud** — Audio never leaves your device  
@@ -518,6 +518,3 @@ Found a bug? Want to improve something?
 3. Submit a pull request with improvements
 
 ---
-
-
-

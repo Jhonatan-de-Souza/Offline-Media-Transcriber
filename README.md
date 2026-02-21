@@ -1,153 +1,523 @@
-# Offline Media Transcriber
+# Audio Transcriber
 
-## 📸 Preview
+Convert any audio or video file to text—completely offline and private. Choose between CPU-optimized (recommended) or GPU-accelerated depending on your hardware.
 
-### GUI Interface
-![Selecting files to compress](modules/assets/before1.jpeg)
+![CPU-Based Transcriber](./CPU%20Based%20Audio%20Transcriber//assets/cpu_audio_transcriber.png)
 
-### After transcription
-![After transcription](modules/assets/after2.jpeg)
+## Why Audio Transcriber?
 
-Convert any audio or video file to text with ease. This desktop application uses **Whisper AI** for fast, accurate transcription—completely local and private.
+✅ **Works offline** — No cloud uploads, no account needed  
+✅ **Fast and accurate** — Powered by advanced AI models  
+✅ **Free and open** — No subscriptions or usage limits  
+✅ **Cross-platform** — Windows, macOS, and Linux supported  
+✅ **Choose your tool** — CPU for optimal speed and good accurary, GPU for much slower, but more accuracy  
 
-## Features
+---
 
-- 🎵 **Transcribe Audio** — MP3, WAV, M4A, FLAC, OGG formats
-- 🎬 **Extract Audio from Video** — MP4, MKV, and more
-- ⚡ **GPU Acceleration** — NVIDIA CUDA support for faster processing
-- 🕐 **Smart Time Estimation** — Predicts transcription time based on your GPU/CPU
-- 🌙 **Dark Theme UI** — Modern, eye-friendly interface
-- 📁 **Batch Processing** — Transcribe multiple files at once
-- 🔒 **100% Private & Free** — No cloud uploads, all processing runs locally
-- ⚙️ **Animated Loading Screen** — Live status updates while models load
+## ⚡ Quick Comparison
 
-## Requirements
+| Feature | CPU-Based | GPU-Based |
+|---------|-----------|-----------|
+| **Best for** | Most users, laptops | Batch processing |
+| **Engine** | Parakeet V3 (ONNX) | Whisper AI (PyTorch) |
+| **Speed** | Fast | Slower (2-5x on average) |
+| **Setup** | Simple | Requires CUDA setup |
+| **GPU needed** | No | Yes (NVIDIA) |
+| **Model size** | ~671MB | ~1GB |
 
-- **Python 3.12+**
-- **FFmpeg** (for video/audio processing)
-- **Windows 64-bit OS**
-- **NVIDIA GPU** (optional, for faster transcription)
+**→ Recommended: Start with CPU-based for fastest transcription.**
 
-## Quick Start
+---
 
-### 1. Clone the Repository
-````bash
-git clone https://github.com/Jhonatan-de-Souza/AudioTranscriber.git
-cd AudioTranscriber
-````
+## 🚀 CPU-Based Transcriber (Recommended)
 
-### 2. Create Virtual Environment (Recommended)
-````bash
-python -m venv .venv
-.venv\Scripts\activate
-````
+This is the easiest option. It works on any computer without requiring a GPU.
 
-### 3. Install Dependencies
-````bash
+### Installation
+
+**Step 1: Navigate to the CPU folder**
+
+```bash
+cd "CPU Based Audio Transcriber"
+```
+
+**Step 2: Create a virtual environment**
+
+=== "macOS / Linux"
+
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
+
+=== "Windows (PowerShell)"
+
+    ```powershell
+    python -m venv venv
+    venv\Scripts\Activate.ps1
+    ```
+
+=== "Windows (Command Prompt)"
+
+    ```cmd
+    python -m venv venv
+    venv\Scripts\activate.bat
+    ```
+
+**Step 3: Install dependencies**
+
+```bash
 pip install -r requirements.txt
-````
+```
 
-### 4. GPU Setup (Windows with NVIDIA GPU)
-````powershell
+**Step 4 (Optional): Install FFmpeg for video support**
+
+=== "macOS"
+
+    ```bash
+    brew install ffmpeg
+    ```
+
+=== "Ubuntu / Debian"
+
+    ```bash
+    sudo apt-get install ffmpeg
+    ```
+
+=== "Windows"
+
+    ```bash
+    choco install ffmpeg
+    ```
+
+### Quick Start
+
+Launch the app:
+
+```bash
+python app.py
+```
+
+You'll see:
+1. **Loading screen** — App initializes and loads the model
+2. **Main window** — Ready to transcribe
+
+Then:
+1. Click **Browse** and select an audio or video file
+2. Click **Transcribe**
+3. Watch the countdown timer (not a frozen progress bar!)
+4. Results appear automatically
+
+### Supported File Types
+
+**Audio:** MP3, WAV, M4A, FLAC, OGG, AIFF, AU, and more  
+**Video:** MP4, MKV, AVI, MOV, WEBM, FLV, WMV, etc. (auto-converted)
+
+### How It Works
+
+- **Smart time estimation** — App measures your CPU performance on startup
+- **Accurate countdown** — Timer shows real remaining time, not guesses
+- **Responsive UI** — Never freezes; cancel anytime
+- **No language selection** — Model auto-detects what you're speaking
+
+### What Happens Behind the Scenes
+
+```
+1. Select file
+   ↓
+2. App measures CPU speed (5-second benchmark)
+   ↓
+3. Calculate: estimated_time = file_duration × your_cpu_speed
+   ↓
+4. Transcribe with accurate countdown
+   ↓
+5. Show results
+```
+
+### Project Files
+
+```
+CPU Based Audio Transcriber/
+├── app.py                      # Main interface (start here)
+├── config.py                   # Model paths configuration
+├── model_manager.py            # Parakeet V3 model loader
+├── transcription_service.py    # Transcription engine
+├── performance_profiler.py     # CPU benchmarking
+├── video_converter.py          # Video-to-audio conversion
+├── audio_handler.py            # Audio file loading
+├── requirements.txt            # Dependencies list
+│
+├── models/                     # ONNX model files (included)
+│   ├── encoder.int8.onnx
+│   ├── decoder.int8.onnx
+│   ├── joiner.int8.onnx
+│   └── tokens.txt
+│
+└── assets/                     # UI resources
+```
+
+### System Requirements
+
+- **Python:** 3.14+
+- **RAM:** 2GB minimum (4GB recommended)
+- **Disk:** 300MB for models
+- **OS:** Windows, macOS (Intel/Apple Silicon), Linux
+
+### Dependencies
+
+- `sherpa-onnx>=1.9.0` — ONNX runtime for Parakeet V3
+- `soundfile>=0.12.1` — Audio file reading
+- `customtkinter>=5.0.0` — Modern graphical interface
+- `numpy>=1.21.0` — Audio processing
+
+---
+
+## 🎮 GPU-Based Transcriber
+
+Use this if you have an NVIDIA GPU for batch processing.
+
+![GPU-Based Transcriber - Before](./GPU%20Based%20Audio%20Transcriber/modules/assets/before1.jpeg)
+![GPU-Based Transcriber - After](./GPU%20Based%20Audio%20Transcriber/modules/assets/after2.jpeg)
+
+### Installation
+
+**Step 1: Navigate to the GPU folder**
+
+```bash
+cd "GPU Based Audio Transcriber"
+```
+
+**Step 2: Create a virtual environment**
+
+=== "macOS / Linux"
+
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
+
+=== "Windows (PowerShell)"
+
+    ```powershell
+    python -m venv venv
+    venv\Scripts\Activate.ps1
+    ```
+
+**Step 3: Install dependencies**
+
+```bash
+pip install -r requirements.txt
+```
+
+**Step 4: Install PyTorch with CUDA support**
+
+```bash
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu126
-````
+```
 
-### 5. Run the Application
-````bash
+**Step 5: Verify GPU detection**
+
+```bash
+python -c "import torch; print('GPU available:', torch.cuda.is_available())"
+```
+
+If `True` appears, your GPU is ready. If `False`, see [GPU troubleshooting](#gpu-not-detected).
+
+### Quick Start
+
+```bash
 python main.py
-````
+```
 
-On startup, you'll see an animated loading screen while the Whisper model loads (10-15 seconds). Once ready, the main window opens.
+You'll see:
+1. **Splash screen** — Whisper model loads
+2. **Main window** — Two columns for single/batch transcription
 
-## Verify GPU Support
+Choose **Single File Transcription** or **Batch Processing**:
 
-Check if GPU acceleration is available:
-````bash
-python -c "import torch; print('GPU Available:', torch.cuda.is_available(), '| CUDA Version:', torch.version.cuda)"
-````
+**Single File:**
+1. Click **Browse File**
+2. Select language
+3. Click **Transcribe**
 
-## How It Works
+**Batch Processing:**
+1. Click **Select Folder**
+2. Choose output folder
+3. Click **Start Batch**
 
-1. **Select a file** — Audio or video format
-2. **Choose language** — Supports 12+ languages
-3. **Start transcription** — See smart time estimate countdown
-4. **Save results** — Export transcription as .txt file
+### Features
 
-### Batch Processing
-- Select a folder with multiple MP4 files
-- Choose output folder for transcriptions
-- App processes them sequentially with time estimates
+- 🌐 **Multi-language** — Supports multiple languages
+- 📁 **Batch processing** — Transcribe entire folders automatically
+- 💾 **Auto-save** — Results saved to text files
+- ⏱️ **Real-time feedback** — Monitor transcription progress
 
-## Privacy
+### Dependencies
 
-✓ All transcription runs **locally on your machine**  
-✓ No data sent to the cloud  
-✓ Your audio/video files never leave your PC  
-✓ Works completely offline (after model loads)
+- `torch>=2.0.0` — PyTorch with CUDA support
+- `openai-whisper>=20230314` — Whisper speech recognition
+- `pydub>=0.25.0` — Audio handling
+- `PyQt5>=5.0.0` — Professional interface
 
-## Project Structure
+---
 
-````
-AudioTranscriber/
-├── main.py                    # Entry point (torch imported first for Windows)
-├── requirements.txt           # Python dependencies
-├── README.md                  # This file
-├── .gitignore                 # Git ignore rules
-├── audio-to-text.ico         # Application icon
-└── modules/
-    ├── __init__.py           # Package exports
-    ├── splash.py             # Animated loading screen with braille spinner
-    ├── ui.py                 # PyQt5 GUI with dark theme
-    ├── transcriber.py        # Whisper transcription logic + threading
-    └── audio_processor.py    # Audio processing & GPU detection utilities
-````
+## 📖 Detailed Usage Guide
 
-## Architecture & Best Practices
+### CPU Version: Full Workflow
 
-### Modular Design
-- **Separation of Concerns**: Each module handles one responsibility
-  - `splash.py` — UI/Loading animation
-  - `ui.py` — Main application interface
-  - `transcriber.py` — Transcription logic & threading
-  - `audio_processor.py` — Audio utilities & GPU detection
+**Example: Transcribe a podcast episode**
 
-### Threading
-- Long-running tasks (model loading, transcription) run on separate threads
-- UI remains responsive during processing
-- Signals/slots pattern for thread-safe communication
+```
+1. Start app: python app.py
 
-### Smart Time Estimation
-- Analyzes file duration + available GPU memory
-- Adaptive multipliers for different GPU tiers:
-  - 16GB+ GPU: 40% of file duration
-  - 8GB GPU: 80% of file duration
-  - 4GB GPU: 120% of file duration
-  - CPU only: 200% of file duration
-- Auto-extends countdown if transcription takes longer
+2. App benchmarks your CPU (watch progress):
+   "⏳ Starting CPU benchmark..."
+   "✓ CPU benchmark complete (RTF: 1.2x)"
 
-### Error Handling
-- Graceful fallbacks (CPU if GPU fails)
-- User-friendly error messages
-- Cleanup of temporary files
+3. Click "Browse" → Select "podcast.mp4"
 
-### UI/UX
-- Dark theme for reduced eye strain
-- Animated loading screen (not frozen)
-- Centered windows
-- Real-time countdown instead of progress bar
-- Status updates during processing
+4. Click "Transcribe"
+   Status: "⏱️ 15.2s remaining"
+   (countdown updates every 0.5 seconds)
 
-## Tech Stack
+5. Wait for transcription
+   Status: "✓ Ready"
 
-| Component | Technology |
-|-----------|-----------|
-| **GUI Framework** | PyQt5 |
-| **Speech Recognition** | OpenAI Whisper |
-| **Deep Learning** | PyTorch |
-| **Audio Processing** | pydub, FFmpeg |
-| **Language** | Python 3.12 |
-| **OS** | Windows 64-bit |
+6. Results appear in text box
+   (Select all + copy, or save to file)
+```
 
-## License
+### GPU Version: Batch Processing
 
-MIT
+**Example: Transcribe 10 MP4 files**
+
+```
+1. Start app: python main.py
+   (Splash screen shows model loading progress)
+
+2. Click "Select Folder with Files"
+   → Choose folder with 10 MP4s
+
+3. Shows "✓ 10 file(s) found"
+
+4. Click "Start Batch"
+   → Choose output folder
+
+5. Watch real-time progress:
+   "Processing 3/10: meeting-notes.mp4"
+   "⏱️ Est. Time: 2:45"
+
+6. Results saved:
+   ✓ meeting-notes.txt
+   ✓ Q1-summary.txt
+   ...
+```
+
+---
+
+## 🔧 Troubleshooting
+
+### CPU Version
+
+#### "Module not found: sherpa_onnx"
+
+**Cause:** Dependencies not installed in virtual environment  
+**Solution:**
+
+```bash
+# Make sure virtual environment is activated
+source venv/bin/activate  # macOS/Linux
+# or
+venv\Scripts\activate     # Windows
+
+# Reinstall dependencies
+pip install -r requirements.txt
+```
+
+#### "FFmpeg not found" (video files not working)
+
+**Cause:** FFmpeg not installed on your system  
+**Solution:**
+
+=== "macOS"
+
+    ```bash
+    # Install Homebrew first if needed: https://brew.sh
+    brew install ffmpeg
+    ```
+
+=== "Ubuntu / Debian"
+
+    ```bash
+    sudo apt-get update
+    sudo apt-get install ffmpeg
+    ```
+
+=== "Windows"
+
+    ```bash
+    # Option 1: Using Chocolatey (requires admin)
+    choco install ffmpeg
+
+    # Option 2: Manual download
+    # 1. Visit https://ffmpeg.org/download.html
+    # 2. Download Windows build
+    # 3. Extract to C:\ffmpeg
+    # 4. Add C:\ffmpeg\bin to PATH
+    ```
+
+#### "Model files not found"
+
+**Cause:** Models are missing or in wrong location  
+**Solution:**
+
+```bash
+# Check if models exist
+ls models/
+
+# Should show:
+# encoder.int8.onnx
+# decoder.int8.onnx
+# joiner.int8.onnx
+# tokens.txt
+
+# If missing, you may need to re-clone the repository
+```
+
+#### Countdown timer seems wrong
+
+**Cause:** CPU performance measurement may vary between runs  
+**Solution:** Subsequent runs will provide better accuracy as the app learns your system performance.
+
+### GPU Version
+
+#### GPU not detected
+
+**Cause:** Either no NVIDIA GPU, or CUDA not installed  
+**Solution:**
+
+```bash
+# Check if you have an NVIDIA GPU
+nvidia-smi
+
+# If command not found, you need NVIDIA drivers
+# Download from: https://www.nvidia.com/Download/driverDetails.aspx
+
+# After installing drivers, reinstall PyTorch
+pip uninstall torch torchvision
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu126
+```
+
+#### "CUDA out of memory"
+
+**Cause:** Your GPU doesn't have enough VRAM  
+**Solution:** Switch to CPU-based version or reduce batch size
+
+```bash
+# Use CPU instead
+cd ../CPU\ Based\ Audio\ Transcriber
+python app.py
+```
+
+#### Model loading hangs
+
+**Cause:** First download taking too long (Whisper model needs to download)  
+**Solution:** Be patient. Check internet connection. It's a one-time download.
+
+```bash
+# Check if it's downloading (on Windows, check Task Manager)
+# Check if it's downloading (on Mac, check Activity Monitor)
+# Check if it's downloading (on Linux, run: watch -n 1 'du -sh ~/.cache/huggingface/hub/')
+```
+
+---
+
+## ⚙️ Advanced Configuration
+
+### CPU Version: Change Model Path
+
+Edit `config.py`:
+
+```python
+MODEL_CONFIG = {
+    "encoder_path": "./models/encoder.int8.onnx",  # ← Path to encoder
+    "decoder_path": "./models/decoder.int8.onnx",
+    "joiner_path": "./models/joiner.int8.onnx",
+    "tokens_path": "./models/tokens.txt",
+}
+```
+
+### Performance Tuning
+
+**CPU Version:**
+- Close other applications for best results
+- System load will affect transcription speed
+
+**GPU Version:**
+- Better suited for batch processing multiple files
+- Requires CUDA drivers and PyTorch setup
+
+---
+
+## 🎯 Which Version Should I Choose?
+
+**Choose CPU-Based if:**
+- ✅ You want the simplest setup
+- ✅ You don't have an NVIDIA GPU
+- ✅ You prefer the fastest transcription
+- ✅ You transcribe 1-2 files occasionally
+
+**Choose GPU-Based if:**
+- ✅ You have an NVIDIA GPU
+- ✅ You transcribe batches of files regularly
+- ✅ You already have CUDA and PyTorch installed
+
+---
+
+##  Privacy & Security
+
+✅ **100% Offline** — All processing happens on your computer  
+✅ **No Cloud** — Audio never leaves your device  
+✅ **No Account** — No login, email, or registration required  
+✅ **No Tracking** — No analytics, no telemetry, no ads  
+✅ **Open Source** — Inspect the code anytime  
+
+---
+
+## 📝 License
+
+MIT — Free to use, modify, and distribute
+
+---
+
+## ❓ FAQ
+
+**Q: Can I use this without internet?**  
+A: Yes! After you run the app once (models download), you can work completely offline.
+
+**Q: Is there a file size limit?**  
+A: No. Very large files will just take longer to transcribe.
+
+**Q: Does it work on Mac with Apple Silicon?**  
+A: Yes, the CPU version works on Apple Silicon (M1/M2/M3).
+
+**Q: Can I batch transcribe with CPU version?**  
+A: Not in the UI, but you can run multiple instances.
+
+**Q: Can I improve transcription accuracy?**  
+A: Use clear audio and minimize background noise for best results.
+
+---
+
+## 🤝 Contributing
+
+Found a bug? Want to improve something?
+
+1. Check existing [GitHub issues](https://github.com/Jhonatan-de-Souza/AudioTranscriber/issues)
+2. Create a new issue with clear description
+3. Submit a pull request with improvements
+
+---
+
+
+

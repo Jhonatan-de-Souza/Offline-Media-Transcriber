@@ -1,0 +1,4 @@
+sherpa-onnx>=1.9.0
+soundfile>=0.12.1
+customtkinter>=5.0.0
+numpy>=1.21.0

@@ -284,8 +284,25 @@ class AudioTranscriberApp(ctk.CTk):
             border_width=1,
             font=FONT_OUTPUT_TEXT
         )
-        self.output_text.pack(fill="both", expand=True, padx=15, pady=15)
+        self.output_text.pack(fill="both", expand=True, padx=15, pady=(15, 0))
         self.output_text.insert("0.0", "Transcription results will appear here...\n")
+
+        # Copy button row below textbox
+        copy_row = ctk.CTkFrame(output_frame, fg_color="transparent")
+        copy_row.pack(fill="x", padx=15, pady=(6, 15))
+
+        self.copy_btn = ctk.CTkButton(
+            copy_row,
+            text="📋 Copy Transcription",
+            command=self.copy_transcription,
+            fg_color=COLOR_PRIMARY,
+            hover_color="#0056a8",
+            text_color=COLOR_CARD,
+            font=FONT_BUTTON,
+            height=32,
+            state="disabled",
+        )
+        self.copy_btn.pack(side="right")
     
     def _create_status_bar(self, parent: ctk.CTkFrame) -> None:
         """Create status bar at bottom with integrated progress bar."""
@@ -407,6 +424,7 @@ class AudioTranscriberApp(ctk.CTk):
             return
         
         self.is_transcribing = True
+        self.copy_btn.configure(state="disabled")
         self._update_ui_for_transcription(True)
         self.progress_bar.configure(mode="indeterminate")
         self.progress_bar.start()
@@ -461,10 +479,21 @@ class AudioTranscriberApp(ctk.CTk):
         """Update progress during transcription."""
         pass  # GUI progress is driven by _update_timer polling get_gui_progress()
     
+    def copy_transcription(self) -> None:
+        """Copy transcription text to clipboard."""
+        text = self.output_text.get("0.0", "end").strip()
+        if text:
+            self.clipboard_clear()
+            self.clipboard_append(text)
+            # Brief visual feedback
+            self.copy_btn.configure(text="✓ Copied!")
+            self.after(1500, lambda: self.copy_btn.configure(text="📋 Copy Transcription"))
+
     def _on_transcription_complete(self, result: str) -> None:
         """Handle completed transcription."""
         self.output_text.delete("0.0", "end")
         self.output_text.insert("0.0", result)
+        self.copy_btn.configure(state="normal")
         self.status_label.configure(text="✓ Complete", text_color=COLOR_SUCCESS)
         self.app_status.configure(text="Transcription complete", text_color=COLOR_SUCCESS)
         self.progress_bar.stop()

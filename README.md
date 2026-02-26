@@ -2,7 +2,7 @@
 
 Convert any audio or video file to text—completely offline and private. Choose between CPU-optimized (recommended) or GPU-accelerated depending on your hardware.
 
-![CPU-Based Transcriber](./CPU%20Based%20Audio%20Transcriber//assets/cpu_audio_transcriber.png)
+![CPU-Based Transcriber](./CPU%20Based%20Audio%20Transcriber//assets/audio_transcriber.jpeg)
 
 ## Why Audio Transcriber?
 

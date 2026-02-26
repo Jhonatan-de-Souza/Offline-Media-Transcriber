@@ -22,6 +22,17 @@ COLOR_TEXT_LIGHT = "#818384"   # Light gray text
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("blue")
 
+# Font constants
+FONT_HEADER = ("Helvetica", 28, "bold")
+FONT_SUBTITLE = ("Helvetica", 13)
+FONT_SECTION_TITLE = ("Helvetica", 13, "bold")
+FONT_LABEL = ("Helvetica", 13)
+FONT_BUTTON = ("Helvetica", 13, "bold")
+FONT_OUTPUT_TITLE = ("Helvetica", 13, "bold")
+FONT_OUTPUT_TEXT = ("Menlo", 13)
+FONT_STATUS = ("Helvetica", 13)
+FONT_PROGRESS = ("Helvetica", 13)
+
 
 class AudioTranscriberApp(ctk.CTk):
     """Main application window."""
@@ -166,15 +177,15 @@ class AudioTranscriberApp(ctk.CTk):
         title = ctk.CTkLabel(
             header_frame,
             text="🎤 Fast Audio Transcriber",
-            font=("Helvetica", 28, "bold"),
+            font=FONT_HEADER,
             text_color=COLOR_PRIMARY
         )
         title.pack(side="left")
         
         subtitle = ctk.CTkLabel(
             header_frame,
-            text="Powered by Parakeet V3",
-            font=("Helvetica", 12),
+            text="Made by Jhonatan de Souza",
+            font=FONT_SUBTITLE,
             text_color=COLOR_TEXT_LIGHT
         )
         subtitle.pack(side="left", padx=(10, 0))
@@ -187,14 +198,14 @@ class AudioTranscriberApp(ctk.CTk):
         ctk.CTkLabel(
             section_frame,
             text="📁 Select Audio or Video File",
-            font=("Helvetica", 12, "bold"),
+            font=FONT_SECTION_TITLE,
             text_color=COLOR_PRIMARY
         ).pack(anchor="w", padx=15, pady=(15, 8))
         
         self.file_label = ctk.CTkLabel(
             section_frame,
             text="No file selected",
-            font=("Helvetica", 10),
+            font=FONT_LABEL,
             text_color=COLOR_TEXT_LIGHT
         )
         self.file_label.pack(anchor="w", padx=15, pady=(0, 10))
@@ -209,7 +220,7 @@ class AudioTranscriberApp(ctk.CTk):
             fg_color=COLOR_PRIMARY,
             hover_color="#0056a8",
             text_color=COLOR_CARD,
-            font=("Helvetica", 11, "bold"),
+            font=FONT_BUTTON,
             height=35
         )
         self.select_btn.pack(side="left", fill="x", expand=True, padx=(0, 8))
@@ -221,7 +232,7 @@ class AudioTranscriberApp(ctk.CTk):
             fg_color=COLOR_SUCCESS,
             hover_color="#1f8c47",
             text_color=COLOR_CARD,
-            font=("Helvetica", 11, "bold"),
+            font=FONT_BUTTON,
             height=35
         )
         self.transcribe_btn.pack(side="left", fill="x", expand=True, padx=(0, 8))
@@ -233,7 +244,7 @@ class AudioTranscriberApp(ctk.CTk):
             fg_color=COLOR_DANGER,
             hover_color="#c0392b",
             text_color=COLOR_CARD,
-            font=("Helvetica", 11, "bold"),
+            font=FONT_BUTTON,
             height=35,
             state="normal"
         )
@@ -252,14 +263,14 @@ class AudioTranscriberApp(ctk.CTk):
         ctk.CTkLabel(
             header,
             text="📝 Transcription Result",
-            font=("Helvetica", 13, "bold"),
+            font=FONT_OUTPUT_TITLE,
             text_color=COLOR_PRIMARY
         ).pack(side="left")
         
         self.status_label = ctk.CTkLabel(
             header,
             text="",
-            font=("Helvetica", 10),
+            font=FONT_STATUS,
             text_color=COLOR_WARNING
         )
         self.status_label.pack(side="right")
@@ -271,7 +282,7 @@ class AudioTranscriberApp(ctk.CTk):
             text_color=COLOR_FG,
             border_color=COLOR_BORDER,
             border_width=1,
-            font=("Menlo", 11)
+            font=FONT_OUTPUT_TEXT
         )
         self.output_text.pack(fill="both", expand=True, padx=15, pady=15)
         self.output_text.insert("0.0", "Transcription results will appear here...\n")
@@ -295,7 +306,7 @@ class AudioTranscriberApp(ctk.CTk):
         self.app_status = ctk.CTkLabel(
             top_row,
             text="Loading model...",
-            font=("Helvetica", 10),
+            font=FONT_STATUS,
             text_color=COLOR_SUCCESS
         )
         self.app_status.pack(side="left", padx=(6, 0))
@@ -307,7 +318,7 @@ class AudioTranscriberApp(ctk.CTk):
         self.progress_phase_label = ctk.CTkLabel(
             self.progress_row,
             text="",
-            font=("Helvetica", 10),
+            font=FONT_PROGRESS,
             text_color=COLOR_PRIMARY,
             anchor="w",
             width=160,
@@ -330,7 +341,7 @@ class AudioTranscriberApp(ctk.CTk):
         self.progress_detail_label = ctk.CTkLabel(
             self.progress_row,
             text="",
-            font=("Helvetica", 10),
+            font=FONT_PROGRESS,
             text_color=COLOR_TEXT_LIGHT,
             anchor="e",
             width=160,

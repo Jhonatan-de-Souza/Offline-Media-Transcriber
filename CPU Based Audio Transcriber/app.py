@@ -85,9 +85,17 @@ class AudioTranscriberApp(ctk.CTk):
         self.audio_file: str | None = None
         self.is_transcribing = False
         
+        # Resource limits (can be customized)
+        MAX_CPU_PERCENT = 80.0
+        MAX_RAM_PERCENT = 80.0
+        
         # Services
         self.model_manager = ModelManager(**MODEL_CONFIG)
-        self.transcription_service = TranscriptionService(self.model_manager)
+        self.transcription_service = TranscriptionService(
+            self.model_manager,
+            max_cpu_percent=MAX_CPU_PERCENT,
+            max_ram_percent=MAX_RAM_PERCENT
+        )
         
         # UI Setup
         self._setup_ui()
@@ -227,9 +235,10 @@ class AudioTranscriberApp(ctk.CTk):
             text_color=COLOR_CARD,
             font=("Helvetica", 11, "bold"),
             height=35,
-            state="disabled"
+            state="normal"
         )
         self.cancel_btn.pack(side="left", fill="x", expand=True)
+
     
     def _create_output_section(self, parent: ctk.CTkFrame) -> None:
         """Create transcription output UI."""
@@ -268,24 +277,71 @@ class AudioTranscriberApp(ctk.CTk):
         self.output_text.insert("0.0", "Transcription results will appear here...\n")
     
     def _create_status_bar(self, parent: ctk.CTkFrame) -> None:
-        """Create status bar at bottom."""
+        """Create status bar at bottom with integrated progress bar."""
         status_frame = ctk.CTkFrame(parent, fg_color=COLOR_CARD, corner_radius=8)
         status_frame.pack(fill="x")
         
+        # Top row: Status label + status text
+        top_row = ctk.CTkFrame(status_frame, fg_color="transparent")
+        top_row.pack(fill="x", padx=12, pady=(8, 2))
+        
         ctk.CTkLabel(
-            status_frame,
+            top_row,
             text="Status:",
             font=("Helvetica", 10, "bold"),
             text_color=COLOR_PRIMARY
-        ).pack(side="left", padx=12, pady=10)
+        ).pack(side="left")
         
         self.app_status = ctk.CTkLabel(
-            status_frame,
+            top_row,
             text="Loading model...",
             font=("Helvetica", 10),
             text_color=COLOR_SUCCESS
         )
-        self.app_status.pack(side="left", padx=(0, 12), pady=10)
+        self.app_status.pack(side="left", padx=(6, 0))
+
+        # Progress row (hidden when idle)
+        self.progress_row = ctk.CTkFrame(status_frame, fg_color="transparent")
+        
+        # Phase + percentage label on the left
+        self.progress_phase_label = ctk.CTkLabel(
+            self.progress_row,
+            text="",
+            font=("Helvetica", 10),
+            text_color=COLOR_PRIMARY,
+            anchor="w",
+            width=160,
+        )
+        self.progress_phase_label.pack(side="left", padx=(0, 8))
+        
+        # Bar itself
+        self.progress_bar = ctk.CTkProgressBar(
+            self.progress_row,
+            orientation="horizontal",
+            mode="determinate",
+            progress_color=COLOR_PRIMARY,
+            fg_color=COLOR_BORDER,
+            height=12,
+        )
+        self.progress_bar.set(0)
+        self.progress_bar.pack(side="left", fill="x", expand=True)
+        
+        # Detail text on the right ("Chunk 5 / 11", "~2m 14s remaining")
+        self.progress_detail_label = ctk.CTkLabel(
+            self.progress_row,
+            text="",
+            font=("Helvetica", 10),
+            text_color=COLOR_TEXT_LIGHT,
+            anchor="e",
+            width=160,
+        )
+        self.progress_detail_label.pack(side="left", padx=(8, 0))
+        
+        # Bottom padding row (only shown when progress row visible)
+        self._progress_spacer = ctk.CTkFrame(status_frame, fg_color="transparent", height=6)
+        
+        # Start hidden
+        self._set_progress_visible(False)
     
     def _load_model_async(self) -> None:
         """Load model in background."""
@@ -341,6 +397,11 @@ class AudioTranscriberApp(ctk.CTk):
         
         self.is_transcribing = True
         self._update_ui_for_transcription(True)
+        self.progress_bar.configure(mode="indeterminate")
+        self.progress_bar.start()
+        self.progress_phase_label.configure(text="Starting...")
+        self.progress_detail_label.configure(text="")
+        self._set_progress_visible(True)
         self.output_text.delete("0.0", "end")
         self.output_text.insert("0.0", "Transcribing...\n")
         
@@ -353,13 +414,41 @@ class AudioTranscriberApp(ctk.CTk):
         
         self._update_timer()
     
+    def _set_progress_visible(self, visible: bool) -> None:
+        """Show or hide the progress bar row inside the status bar."""
+        if visible:
+            self.progress_row.pack(fill="x", padx=12, pady=(2, 0))
+            self._progress_spacer.pack(fill="x")
+        else:
+            self.progress_row.pack_forget()
+            self._progress_spacer.pack_forget()
+
+    def _update_progress_bar(self) -> None:
+        """Poll TranscriptionService and refresh the progress bar."""
+        phase, frac, detail = self.transcription_service.get_gui_progress()
+
+        if phase == "idle":
+            self._set_progress_visible(False)
+            self.progress_bar.configure(mode="determinate")
+            self.progress_bar.set(0)
+            return
+
+        self._set_progress_visible(True)
+        self.progress_phase_label.configure(text=phase)
+        self.progress_detail_label.configure(text=detail)
+
+        if frac < 0:
+            # Indeterminate — animate the bar
+            self.progress_bar.configure(mode="indeterminate")
+            self.progress_bar.start()
+        else:
+            self.progress_bar.configure(mode="determinate")
+            self.progress_bar.stop()
+            self.progress_bar.set(frac)
+
     def _on_transcription_progress(self, elapsed: float, total: float) -> None:
         """Update progress during transcription."""
-        if total > 0:
-            remaining = total - elapsed
-            self.status_label.configure(
-                text=f"⏱️ {remaining:.1f}s remaining"
-            )
+        pass  # GUI progress is driven by _update_timer polling get_gui_progress()
     
     def _on_transcription_complete(self, result: str) -> None:
         """Handle completed transcription."""
@@ -367,6 +456,11 @@ class AudioTranscriberApp(ctk.CTk):
         self.output_text.insert("0.0", result)
         self.status_label.configure(text="✓ Complete", text_color=COLOR_SUCCESS)
         self.app_status.configure(text="Transcription complete", text_color=COLOR_SUCCESS)
+        self.progress_bar.stop()
+        self.progress_bar.configure(mode="determinate")
+        self.progress_bar.set(1.0)
+        self.progress_phase_label.configure(text="Done")
+        self.progress_detail_label.configure(text="")
         self._finish_transcription()
     
     def _on_transcription_error(self, error: str) -> None:
@@ -374,11 +468,19 @@ class AudioTranscriberApp(ctk.CTk):
         messagebox.showerror("Transcription Error", error)
         self.status_label.configure(text="✗ Error", text_color=COLOR_DANGER)
         self.app_status.configure(text="Transcription failed", text_color=COLOR_DANGER)
+        self.progress_bar.stop()
+        self.progress_bar.set(0)
+        self._set_progress_visible(False)
         self._finish_transcription()
     
     def cancel_transcription(self) -> None:
-        """Cancel ongoing transcription."""
+        """Cancel ongoing transcription and kill background processes."""
+        if not self.is_transcribing:
+            return
         self.transcription_service.cancel()
+        self.progress_bar.stop()
+        self.progress_bar.set(0)
+        self._set_progress_visible(False)
         self._finish_transcription()
         self.app_status.configure(text="Transcription cancelled", text_color=COLOR_WARNING)
     
@@ -387,7 +489,7 @@ class AudioTranscriberApp(ctk.CTk):
         state = "disabled" if is_running else "normal"
         self.select_btn.configure(state=state)
         self.transcribe_btn.configure(state=state)
-        self.cancel_btn.configure(state="normal" if is_running else "disabled")
+        # Cancel stays enabled at all times
     
     def _finish_transcription(self) -> None:
         """Cleanup after transcription."""
@@ -395,17 +497,10 @@ class AudioTranscriberApp(ctk.CTk):
         self._update_ui_for_transcription(False)
     
     def _update_timer(self) -> None:
-        """Update countdown timer."""
+        """Poll progress every 300ms and update the progress bar + status label."""
         if self.is_transcribing and self.transcription_service.is_running():
-            elapsed, estimated_total = self.transcription_service.get_progress()
-            
-            if estimated_total > 0:
-                remaining = max(0, estimated_total - elapsed)
-                self.status_label.configure(
-                    text=f"⏱️ {remaining:.1f}s remaining"
-                )
-            
-            self.after(500, self._update_timer)
+            self._update_progress_bar()
+            self.after(300, self._update_timer)
     
     def __del__(self) -> None:
         """Cleanup on exit."""
